@@ -1,0 +1,25 @@
+name: Portable evaluator checks
+on: [push, pull_request]
+permissions:
+  contents: read
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        python: ['3.11', '3.13']
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: ${{ matrix.python }}
+      - run: pip install -e ".[dev]"
+      - run: ruff check .
+      - run: pytest --junitxml=artifacts/tests.xml
+      - run: agent-eval demo artifacts/demo
+      - run: python -m build
+      - uses: actions/upload-artifact@v4
+        with:
+          name: checks-${{ matrix.os }}-${{ matrix.python }}
+          path: artifacts/
