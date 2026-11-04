@@ -83,6 +83,13 @@ def load_bundle(cases_path: Path, rubric_path: Path) -> dict:
                 cases.append(EvalCase.model_validate(raw))
             except ValueError as exc:
                 raise ValueError(f"{cases_path}:{number}: {exc}") from exc
+    rubric = Rubric.model_validate_json(rubric_path.read_text(encoding="utf-8"))
+    return bundle_from_cases(cases, rubric)
+
+
+def bundle_from_cases(cases, rubric: Rubric) -> dict:
+    cases = [c if isinstance(c, EvalCase) else EvalCase.model_validate(c) for c in cases]
+    rubric = Rubric.model_validate(rubric)
     if not cases or len({c.id for c in cases}) != len(cases):
         raise ValueError("dataset must be nonempty with unique case IDs")
     meetings = {}
@@ -96,7 +103,6 @@ def load_bundle(cases_path: Path, rubric_path: Path) -> dict:
         if input_hash in input_splits and input_splits[input_hash] != case.split:
             raise ValueError("identical input cannot cross splits under different IDs")
         input_splits[input_hash] = case.split
-    rubric = Rubric.model_validate_json(rubric_path.read_text(encoding="utf-8"))
     case_data = [c.model_dump(mode="json") for c in cases]
     rubric_data = rubric.model_dump(mode="json")
     return {

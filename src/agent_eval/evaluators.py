@@ -41,17 +41,29 @@ class SubprocessEvaluator:
 
 
 class OpenAIEvaluator:
-    def __init__(self, model: str, client=None):
+    def __init__(self, model: str, client=None, max_output_tokens: int = 1000):
+        if max_output_tokens < 128:
+            raise ValueError("max_output_tokens must be at least 128")
         if client is None:
             from openai import OpenAI
 
             client = OpenAI(timeout=60, max_retries=0)
         self.model, self.client = model, client
+        self.max_output_tokens = max_output_tokens
+        self.last_usage = {}
+        self.configuration = {
+            "plugin": "openai",
+            "model": model,
+            "max_output_tokens": max_output_tokens,
+            "prompt_version": "1",
+        }
 
     def evaluate(self, case, criterion):
+        self.last_usage = {}
         response = self.client.responses.parse(
             model=self.model,
-            max_output_tokens=1000,
+            max_output_tokens=self.max_output_tokens,
+            store=False,
             input=[
                 {
                     "role": "system",
@@ -68,6 +80,14 @@ class OpenAIEvaluator:
             ],
             text_format=Judgment,
         )
+        usage = getattr(response, "usage", None)
+        if usage is not None:
+            self.last_usage = {
+                "model": self.model,
+                "input_tokens": usage.input_tokens,
+                "output_tokens": usage.output_tokens,
+                "total_tokens": usage.total_tokens,
+            }
         if response.output_parsed is None:
             raise ValueError("provider returned no structured judgment")
         return response.output_parsed

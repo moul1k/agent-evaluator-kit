@@ -1,6 +1,21 @@
 """Public, domain-neutral contracts and evaluator interfaces."""
 
-from .meta import Criterion, Judgment, Rubric, Submission, compare, load_bundle
+from .integration import CallableEvaluator, FieldMapping, RoutedEvaluator, acapture, capture
+from .meta import Criterion, Judgment, Rubric, Submission, bundle_from_cases, compare, load_bundle
 from .schemas import EvalCase
 
-__all__ = ["Criterion", "EvalCase", "Judgment", "Rubric", "Submission", "compare", "load_bundle"]
+__all__ = [
+    "Criterion",
+    "Judgment",
+    "Rubric",
+    "Submission",
+    "EvalCase",
+    "compare",
+    "load_bundle",
+    "bundle_from_cases",
+    "CallableEvaluator",
+    "FieldMapping",
+    "RoutedEvaluator",
+    "capture",
+    "acapture",
+]

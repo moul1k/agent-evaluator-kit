@@ -92,7 +92,7 @@ The original `schedule` plugin checks required/unknown/duplicate assignments, wo
 
 ## Langfuse
 
-Cloud export requires `--langfuse`; local-only is the default. The runner creates evaluator observations, categorical criterion scores, and trace IDs, includes dataset/rubric/configuration hashes, and flushes at completion. With default privacy settings, artifacts and rationales are not uploaded; IDs, hashes and verdicts are. Add `--trace-content` only after reviewing data-sharing permissions. Do not put secrets or personal data in case/group IDs.
+For `run`, cloud tracing automatically enables when both Langfuse keys are configured; `--no-langfuse` forces local-only. Without credentials it stays local. The runner creates evaluator observations, categorical criterion scores, and trace IDs, includes dataset/rubric/configuration hashes, and flushes at completion. With default privacy settings, artifacts and rationales are not uploaded; IDs, hashes, verdicts and provider token counts are. Add `--trace-content` only after reviewing data-sharing permissions. Do not put secrets or personal data in case/group IDs.
 
 The optional integration pins Python SDK `>=4.17,<5`, matching the tested SDK interface. New SDK majors require compatibility testing. A successful SDK flush is not proof of backend ingestion; verify trace IDs in Langfuse. Check `metadata.errors` and `metadata.tracing_errors`; CLI runs exit nonzero for recorded errors. Missing predictions remain visible.
 
@@ -103,5 +103,7 @@ The optional integration pins Python SDK `>=4.17,<5`, matching the tested SDK in
 - [Source format adapters and migration](docs/adapters.md)
 - [Study protocol](docs/study-protocol.md)
 - [Verification record](docs/verification.md)
+- [Plug-and-play recipes and runtime credentials](docs/plug-and-play.md)
+- [Verified live GPT-6 Luna + Langfuse smoke test](docs/live-smoke-2026-11-04.md)
 
 No private transcripts, API keys, original project artifacts, or upstream source files are bundled. CI uses no credentials or paid calls.

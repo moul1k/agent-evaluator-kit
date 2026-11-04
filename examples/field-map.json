@@ -1,0 +1,9 @@
+{
+  "id": "/run_id",
+  "group_id": "/request_id",
+  "input": "/request",
+  "output": "/response/content",
+  "tool_trace": "/events",
+  "final_state": "/verified_state",
+  "split": "test"
+}

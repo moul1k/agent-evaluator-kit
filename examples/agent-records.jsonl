@@ -1,0 +1,1 @@
+{"run_id":"run-1","request_id":"request-1","request":"Count completed jobs","response":{"content":{"numerical_evidence":3}},"events":[{"tool":"job_store.count","result":3}],"verified_state":{"execution_result":3}}

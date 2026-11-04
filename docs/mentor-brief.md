@@ -25,7 +25,7 @@ Reference labels never enter the ordinary judge request. The human review bundle
 - Open review.html: demonstrate that source evidence is available but expected labels and judge verdicts are hidden.
 - Open report.json: numerical checker matches 6/6; always-pass control matches 3/6 and falsely accepts all three bad candidates.
 - Run `agent-eval audit ...` on always-pass.json: configured gate exits 1.
-- Run a synthetic demo with `--langfuse`; after rate limits permit verification, inspect evaluator observation and categorical criterion score. Full artifacts stay local by default. The initial extraction-time backend verification returned HTTP 429; hosted ingestion is not yet confirmed.
+- Show the [verified live smoke test](live-smoke-2026-11-04.md): six GPT-6 Luna observations and six categorical scores were retrieved through supported APIs. The initial extraction-time verification returned HTTP 429; the later legacy read returned 410. The observation-based reader now works. Full artifacts stay local by default.
 - Explain that this tiny synthetic demo validates plumbing and one narrow property, not cross-domain semantic judgment.
 
 ## Earlier findings motivating the design

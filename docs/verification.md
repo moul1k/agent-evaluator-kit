@@ -1,5 +1,9 @@
 # Verification record — 2026-11-04
 
+## Follow-up integration verification
+
+The later plug-and-play update supersedes the initial tracing limitation below: **6/6 live GPT-6 Luna observations and 6/6 categorical scores were retrieved using supported APIs**. See [live smoke results](live-smoke-2026-11-04.md). The updated local test suite passes **56 tests**. New integration APIs cover callable capture, configurable log mappings, hybrid routing, runtime credential loading, usage, request limits and telemetry-failure isolation. The initial record is retained below for provenance.
+
 Environment: Windows, Python 3.13.7, isolated project virtual environment. Exact installed dependency snapshot: `requirements-tested.txt` (Windows verification snapshot, not a universal lockfile).
 
 ## Completed
