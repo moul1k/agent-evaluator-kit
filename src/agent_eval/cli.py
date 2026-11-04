@@ -13,6 +13,7 @@ from .demo import write_json
 from .evaluators import NumericResultEvaluator, OpenAIEvaluator, SubprocessEvaluator
 from .integration import FieldMapping
 from .meta import Submission, compare, load_bundle, validate_submission
+from .native import NativeEvaluator
 from .reporting import write_html
 from .review import export_review
 from .runner import run as execute
@@ -66,6 +67,10 @@ def run_command(
     max_calls: int = 100,
     max_output_tokens: int = 1000,
     verify_traces: bool = False,
+    native_repository: Path | None = None,
+    native_commit: str = "",
+    native_thresholds_json: str = "{}",
+    native_contexts: Path | None = None,
 ):
     load_credentials(credentials, langfuse_credentials)
     langfuse = tracing_enabled(langfuse)
@@ -83,20 +88,33 @@ def run_command(
         evaluator = ScheduleConstraintEvaluator()
     elif plugin == "openai" and model:
         evaluator = OpenAIEvaluator(model, max_output_tokens=max_output_tokens)
+    elif plugin in ("native-analysis", "native-scheduler") and native_repository and native_commit:
+        evaluator = NativeEvaluator(
+            plugin.removeprefix("native-"),
+            native_repository,
+            json.loads(native_thresholds_json),
+            expected_commit=native_commit,
+            contexts=json.loads(native_contexts.read_text(encoding="utf-8"))
+            if native_contexts
+            else {},
+        )
     elif plugin == "subprocess":
         command = json.loads(command_json)
         if not isinstance(command, list) or not all(isinstance(v, str) for v in command):
             raise typer.BadParameter("command-json must be a string array")
         evaluator = SubprocessEvaluator(command)
     else:
-        raise typer.BadParameter("use numeric, schedule, subprocess, or openai with --model")
+        raise typer.BadParameter(
+            "use numeric, schedule, subprocess, openai, or a configured native plugin"
+        )
     result = execute(
         load_bundle(cases, rubric),
         evaluator,
         evaluator_id,
         split,
         LangfuseTracer(include_content=trace_content) if langfuse else None,
-        configuration={
+        configuration=getattr(evaluator, "configuration", None)
+        or {
             "plugin": plugin,
             "model": model,
             "command": json.loads(command_json),

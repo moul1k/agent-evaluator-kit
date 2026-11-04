@@ -2,6 +2,8 @@
 
 ## Follow-up integration verification
 
+The three-project harmony audit subsequently passed **65 tests**, including actual execution of both pinned native grading engines. See [capability matrix and integration checks](three-project-integration.md). Model calls were not needed for this native-engine audit. A separate CI job now checks the bridges against pinned checkouts; local success is not a claim of remote CI completion.
+
 The later plug-and-play update supersedes the initial tracing limitation below: **6/6 live GPT-6 Luna observations and 6/6 categorical scores were retrieved using supported APIs**. See [live smoke results](live-smoke-2026-11-04.md). The updated local test suite passes **56 tests**. New integration APIs cover callable capture, configurable log mappings, hybrid routing, runtime credential loading, usage, request limits and telemetry-failure isolation. The initial record is retained below for provenance.
 
 Environment: Windows, Python 3.13.7, isolated project virtual environment. Exact installed dependency snapshot: `requirements-tested.txt` (Windows verification snapshot, not a universal lockfile).

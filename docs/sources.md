@@ -10,7 +10,9 @@ Inspected 2026-11-04:
 
 No LICENSE/COPYING files were present in either collaborator repository at these inspected commits. Public visibility does not itself grant redistribution permission. Consequently **no collaborator source, prompts, datasets, reports or fixtures are copied into this repository**. The integration consists of original implementations of general evaluation patterns and compatibility mappings for their documented formats. Obtain explicit permission before vendoring their domain-specific engines. This is not a legal determination.
 
-The extracted code from Moulik's project is used at its owner's request. No blanket third-party license is asserted for the combined project; decide licensing with all contributors before public redistribution. Repository creation defaults to private.
+The extracted code from Moulik's project is used at its owner's request. No blanket third-party license is asserted for the combined project. Public publication is authorized by the owner; collaborator implementations remain in their own repositories and are not redistributed here. The optional native bridges execute separately installed checkouts at explicit pinned revisions. Obtain contributor agreement before vendoring code or choosing a license intended to cover it.
+
+See [three-project integration](three-project-integration.md) for the direct-extraction versus native-execution capability matrix and source-engine regression checks.
 
 ## Deliberate changes
 

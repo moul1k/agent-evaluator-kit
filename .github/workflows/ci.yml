@@ -23,3 +23,27 @@ jobs:
         with:
           name: checks-${{ matrix.os }}-${{ matrix.python }}
           path: artifacts/
+  upstream-bridges:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.13'
+      - run: pip install -e ".[dev]"
+      - uses: actions/checkout@v4
+        with:
+          repository: Aayushx9/benchmarking-evaluation-layer
+          ref: 1aa83e6eedab4c7438f7c4184bf482096f99d8dc
+          path: artifacts/upstream-analysis
+          persist-credentials: false
+      - uses: actions/checkout@v4
+        with:
+          repository: Srihari4589/scheduler-eval
+          ref: cb1084253388eb5d452618c36cf1dadaf0359ed4
+          path: artifacts/upstream-scheduler
+          persist-credentials: false
+      - run: pytest tests/test_native.py --junitxml=artifacts/native-tests.xml
+        env:
+          AAYUSH_REPO: artifacts/upstream-analysis
+          SRIHARI_REPO: artifacts/upstream-scheduler
