@@ -2,6 +2,19 @@
 
 The integration boundary is JSON artifacts, not an agent framework. Most agents that expose a callable or export JSON/text outputs can connect through these adapters. This does **not** mean every task has an automatic trustworthy rubric: domain-specific criteria and evidence must still be supplied.
 
+Native output adapters and real SDK/tool-loop tests now cover specific OpenAI Agents SDK, LangGraph and smolagents versions. See the [interoperability results and failure history](agent-interop-2026-11-11.md). This does not establish compatibility with every application built on those frameworks.
+
+```python
+from agent_eval.framework_outputs import openai_agents_output, langgraph_output, smolagents_output
+
+# Supply these as output_adapter callbacks to capture/acapture:
+sdk_adapter = lambda result: {"answer": openai_agents_output(result)}
+graph_adapter = lambda state: {"answer": langgraph_output(state, parse_json=True)}
+smol_adapter = lambda result: {"answer": smolagents_output(result, parse_json=True)}
+```
+
+Tool traces and verified final state still need independent capture. Output conversion alone never proves a tool executed or a real operation succeeded.
+
 ## 1. Existing logs: configuration-only import
 
 ```bash

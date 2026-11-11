@@ -1,5 +1,11 @@
 # Verification record — 2026-11-04
 
+## External SDK interoperability — 2026-11-11
+
+**119 software tests passed** in the isolated interop environment, including pinned original-project engine checks, actual SDK result types, and an offline native smolagents tool loop. Package wheel/source builds succeeded. The existing six human chat annotations remain unchanged.
+
+Five successful live agent executions across three external runtimes produced 15 candidates (original/corrupted/missing state). Both deterministic and model evaluators matched all 15 narrow expectations. All 30 evaluator observations and score-bearing traces were verified in Langfuse. Earlier smolagents failures are retained and documented, not omitted from the attempt history. See [full results and limitations](agent-interop-2026-11-11.md).
+
 ## AI-assisted annotation pilot — 2026-11-11
 
 **95 software tests passed**, including origin-label safeguards and preflight call-cap checks. The live pilot produced 12 AI judge annotations on six synthetic candidates, 12/12 authored matches, 6/6 repeated verdict agreements and 12 verified Langfuse observations with categorical scores. These are not human annotations; the study still has zero human references. See [pilot results](ai-annotation-pilot-2026-11-11.md).
