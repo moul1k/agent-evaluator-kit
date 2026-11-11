@@ -108,6 +108,7 @@ def run(
         created_at=datetime.now(UTC),
         judgments=judgments,
         metadata={
+            "annotation_origin": "automated_evaluator",
             "errors": errors,
             "timings": timings,
             "traces": traces,

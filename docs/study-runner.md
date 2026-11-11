@@ -2,6 +2,8 @@
 
 The study runner connects existing adapters, judges and human comparisons into one reproducible workflow. It does not collect real human labels automatically, invent consensus, or run paid models during planning/reporting.
 
+For optional machine-generated drafts, see the [AI annotation pilot](ai-annotation-pilot-2026-11-11.md). These enter the study only as judge predictions, not human references. Machine-origin metadata is rejected on human imports.
+
 ## API-free demonstration
 
 ```bash

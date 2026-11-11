@@ -107,5 +107,6 @@ The optional integration pins Python SDK `>=4.17,<5`, matching the tested SDK in
 - [Verified live GPT-6 Luna + Langfuse smoke test](docs/live-smoke-2026-11-04.md)
 - [All three projects: capability matrix and native engine bridges](docs/three-project-integration.md)
 - [Study runner: frozen batches, human collection and evaluator reports](docs/study-runner.md)
+- [Provisional AI annotations and traced pilot results](docs/ai-annotation-pilot-2026-11-11.md)
 
 No private transcripts, API keys, original project artifacts, or upstream source files are bundled. CI uses no credentials or paid calls.

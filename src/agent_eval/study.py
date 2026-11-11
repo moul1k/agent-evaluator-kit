@@ -247,6 +247,8 @@ def validate_import(envelope, kind, batch_id, submission, domain=None):
     if submission.metadata.get("synthetic_demo"):
         raise ValueError("scripted demo labels cannot enter a human study")
     if kind == "human":
+        if submission.metadata.get("annotation_origin") in ("ai_generated", "automated_evaluator"):
+            raise ValueError("automated predictions cannot be imported as human annotations")
         if domain is not None:
             raise ValueError("human import uses batch identity, not a domain override")
         batches = [b for b in manifest["assignments"] if b["id"] == batch_id]
@@ -478,6 +480,7 @@ def report(root: Path, output: Path):
             {
                 "evaluator_id": submission.evaluator_id,
                 "domain": entry["domain"],
+                "annotation_origin": metadata.get("annotation_origin", "not_reported"),
                 "source_blob_hash": entry["blob_hash"],
                 "configuration_hash": metadata.get("configuration_hash"),
                 "reported_timing_count": len(timings),

@@ -365,3 +365,47 @@ def test_no_overwrite(study, tmp_path):
     report(root, tmp_path / "report")
     with pytest.raises(FileExistsError):
         report(root, tmp_path / "report")
+
+
+@pytest.mark.parametrize("origin", ["ai_generated", "automated_evaluator"])
+def test_automated_annotation_cannot_be_relabelled_human(study, tmp_path, origin):
+    root, envelope = study
+    batch = envelope["manifest"]["assignments"][0]
+    submission = batch_submission(envelope, batch)
+    submission.metadata["annotation_origin"] = origin
+    with pytest.raises(ValueError, match="cannot be imported as human"):
+        ingest(root, save(tmp_path, submission), batch_id=batch["id"])
+    assert status(root)["submitted_cells"] == 0
+
+
+def test_paid_pilot_checks_total_cap_before_provider_setup(study, tmp_path, monkeypatch):
+    import importlib.util
+    import sys
+    from pathlib import Path
+
+    script = Path(__file__).resolve().parents[1] / "scripts/run_ai_annotation_pilot.py"
+    spec = importlib.util.spec_from_file_location("pilot_test", script)
+    module = importlib.util.module_from_spec(spec)
+    spec.loader.exec_module(module)
+
+    def forbidden(*args, **kwargs):
+        raise AssertionError("provider setup must not happen")
+
+    monkeypatch.setattr(module, "LangfuseTracer", forbidden)
+    monkeypatch.setattr(module, "OpenAIEvaluator", forbidden)
+    monkeypatch.setattr(
+        sys,
+        "argv",
+        [
+            str(script),
+            str(study[0]),
+            str(tmp_path / "pilot"),
+            "--run-id",
+            "cap-check",
+            "--max-calls",
+            "1",
+        ],
+    )
+    with pytest.raises(ValueError, match="total call cap"):
+        module.main()
+    assert not (tmp_path / "pilot").exists()

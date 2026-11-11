@@ -1,5 +1,9 @@
 # Verification record — 2026-11-04
 
+## AI-assisted annotation pilot — 2026-11-11
+
+**95 software tests passed**, including origin-label safeguards and preflight call-cap checks. The live pilot produced 12 AI judge annotations on six synthetic candidates, 12/12 authored matches, 6/6 repeated verdict agreements and 12 verified Langfuse observations with categorical scores. These are not human annotations; the study still has zero human references. See [pilot results](ai-annotation-pilot-2026-11-11.md).
+
 ## Study runner update — 2026-11-11
 
 - **92 tests passed**, including both pinned native-engine integration checks. Without upstream checkouts, the two native checks skip explicitly.
