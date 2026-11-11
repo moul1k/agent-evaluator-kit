@@ -127,11 +127,19 @@ def validate_submission(submission: Submission, bundle: dict) -> None:
             raise ValueError("unknown case or criterion")
 
 
-def compare(bundle: dict, submissions: list[Submission], split: str = "test") -> dict:
+def compare(
+    bundle: dict,
+    submissions: list[Submission],
+    split: str = "test",
+    *,
+    minimum_human_votes: int = 2,
+) -> dict:
     """Use independent human consensus; explicit adjudications resolve disagreements.
 
     Missing/abstaining predictions never disappear from coverage counts.
     """
+    if minimum_human_votes < 2:
+        raise ValueError("at least two independent human votes required")
     identities = [(s.kind, s.evaluator_id) for s in submissions]
     if len(identities) != len(set(identities)):
         raise ValueError("duplicate evaluator submission; merge intentionally before analysis")
@@ -157,7 +165,7 @@ def compare(bundle: dict, submissions: list[Submission], split: str = "test") ->
     references, unresolved = {}, []
     for key in keys:
         votes = adjudications.get(key) or humans.get(key, [])
-        minimum = 1 if adjudications.get(key) else 2
+        minimum = 1 if adjudications.get(key) else minimum_human_votes
         if len(votes) >= minimum and len(set(votes)) == 1 and votes[0] in ("pass", "fail"):
             references[key] = votes[0]
         else:

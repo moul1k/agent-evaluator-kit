@@ -1,0 +1,22 @@
+{
+  "id": "synthetic-three-domain-calibration",
+  "version": "1",
+  "purpose": "Small API-free workflow demonstration; not a production benchmark.",
+  "split": "test",
+  "reviewers": ["reviewer-a", "reviewer-b"],
+  "adjudicators": ["study-lead"],
+  "reviews_per_group": 2,
+  "groups_per_domain": 1,
+  "groups_per_batch": 1,
+  "seed": 42,
+  "domain_by_group": {
+    "analysis": "analysis",
+    "scheduler": "scheduler",
+    "meeting": "meeting"
+  },
+  "criteria_by_domain": {
+    "analysis": ["numerical_evidence"],
+    "scheduler": ["numerical_evidence"],
+    "meeting": ["numerical_evidence"]
+  }
+}

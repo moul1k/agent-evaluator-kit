@@ -4,7 +4,10 @@ import json
 from pathlib import Path
 
 
-def export_review(bundle: dict, path: Path) -> None:
+def export_review(bundle: dict, path: Path, *, context: dict | None = None) -> None:
+    bundle = dict(bundle)
+    if context is not None:
+        bundle["review_context"] = context
     payload = (
         json.dumps(bundle).replace("<", "\\u003c").replace(">", "\\u003e").replace("&", "\\u0026")
     )
@@ -25,14 +28,16 @@ PAGE = """<!doctype html><html lang="en"><meta charset="utf-8">
 <section><h2>Agent output</h2><pre id="output"></pre><label>Independent critique: what matters that the rubric misses?<textarea id="critique"></textarea></label><div id="questions"></div></section></main>
 <script type="application/json" id="bundle">__BUNDLE__</script>
 <script>
-const b=JSON.parse(document.getElementById('bundle').textContent), records=new Map(), critiques={};
+const b=JSON.parse(document.getElementById('bundle').textContent), records=new Map(), critiques={}, initial={}, revealed=new Set();
 const el=id=>document.getElementById(id), key=(c,r)=>JSON.stringify([c,r]);
+if(b.review_context){el('reviewer').value=b.review_context.reviewer_id;el('reviewer').readOnly=true}
 for(const c of b.cases){const o=document.createElement('option');o.value=c.id;o.textContent=c.id;el('cases').append(o)}
 function render(){const c=b.cases.find(c=>c.id===el('cases').value);
 el('critique').value=critiques[c.id]||'';el('critique').oninput=()=>{critiques[c.id]=el('critique').value};
 el('input').textContent=JSON.stringify(c.input,null,2);el('output').textContent=JSON.stringify(c.output,null,2);
 el('trace').textContent=JSON.stringify({tool_trace:c.tool_trace,final_state:c.final_state},null,2);
 el('questions').replaceChildren();
+if(b.review_context?.critique_first&&!revealed.has(c.id)){const p=document.createElement('p'), button=document.createElement('button');p.textContent='Before viewing the rubric, note any problems you independently observe. If none, explicitly say so.';button.textContent='Save initial critique and reveal criteria';button.onclick=()=>{if(!el('critique').value.trim()){el('status').textContent='Record your initial observation first.';return}initial[c.id]=el('critique').value;revealed.add(c.id);el('status').textContent='';render()};el('questions').append(p,button);return}
 for(const r of b.rubric.criteria){const a=document.createElement('article'), title=document.createElement('strong'), help=document.createElement('p'), s=document.createElement('select'), t=document.createElement('textarea'), e=document.createElement('textarea');
 title.textContent=r.question;help.textContent='Pass: '+r.pass_condition+' | Fail: '+r.fail_condition;
 for(const v of ['', 'pass','fail','insufficient_context','not_applicable']){const o=document.createElement('option');o.value=v;o.textContent=v||'Choose verdict';s.append(o)}
@@ -45,9 +50,11 @@ el('cases').onchange=render;
 el('download').onclick=()=>{if(!el('reviewer').value.trim()){el('status').textContent='Enter your reviewer ID.';return}
 const judgments=[...records.values()].filter(j=>j.verdict);
 if(judgments.some(j=>!j.rationale.trim())){el('status').textContent='Explain every selected verdict before exporting.';return}
-const data={schema_version:'1',dataset_hash:b.dataset_hash,rubric_hash:b.rubric_hash,rubric_id:b.rubric.id,rubric_version:b.rubric.version,evaluator_id:el('reviewer').value.trim(),kind:'human',created_at:new Date().toISOString(),judgments,metadata:{freeform_critiques:critiques}};
+const data={schema_version:'1',dataset_hash:b.dataset_hash,rubric_hash:b.rubric_hash,rubric_id:b.rubric.id,rubric_version:b.rubric.version,evaluator_id:el('reviewer').value.trim(),kind:'human',created_at:new Date().toISOString(),judgments,metadata:{freeform_critiques:critiques,initial_critiques:initial,...(b.review_context?{study_hash:b.review_context.study_hash,batch_id:b.review_context.batch_id}:{})}};
 const url=URL.createObjectURL(new Blob([JSON.stringify(data,null,2)],{type:'application/json'})),a=document.createElement('a');a.href=url;a.download='annotations.json';a.click();setTimeout(()=>URL.revokeObjectURL(url),1000);el('status').textContent='Exported '+judgments.length+' judgments. Partial submissions are allowed.'};
 el('resume').onchange=async()=>{try{const d=JSON.parse(await el('resume').files[0].text());
 if(d.dataset_hash!==b.dataset_hash||d.rubric_hash!==b.rubric_hash||d.kind!=='human')throw Error('Dataset/rubric mismatch or nonhuman submission');
+if(b.review_context&&(d.evaluator_id!==b.review_context.reviewer_id||d.metadata?.study_hash!==b.review_context.study_hash||d.metadata?.batch_id!==b.review_context.batch_id))throw Error('Wrong reviewer or study batch');
+for(const k of Object.keys(initial))delete initial[k];Object.assign(initial,d.metadata?.initial_critiques||{});revealed.clear();for(const cid of Object.keys(initial))revealed.add(cid);
 records.clear();for(const k of Object.keys(critiques))delete critiques[k];Object.assign(critiques,d.metadata?.freeform_critiques||{});for(const j of d.judgments)records.set(key(j.case_id,j.criterion_id),j);el('reviewer').value=d.evaluator_id;render();el('status').textContent='Resumed your export.'}catch(e){el('status').textContent=e.message}};render();
 </script></html>"""

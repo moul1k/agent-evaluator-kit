@@ -20,9 +20,11 @@ from .runner import run as execute
 from .scheduling import ScheduleConstraintEvaluator
 from .schemas import EvalCase
 from .stability import analyze_repeats
+from .study_cli import app as study_app
 from .tracing import LangfuseTracer
 
 app = typer.Typer(no_args_is_help=True)
+app.add_typer(study_app, name="study")
 
 
 @app.command()

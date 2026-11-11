@@ -41,6 +41,8 @@ These findings motivate scope isolation, evidence-aware abstention, and separati
 
 ## Next milestones and acceptance criteria
 
+The [study runner](study-runner.md) now implements frozen group-balanced assignments, critique-first review pages, archived imports/replacements, progress and per-domain reports. Its API-free demo intentionally starts with zero human labels; actual reviewer collection remains the next milestone.
+
 1. Obtain contributor permission and settle licensing. Review format mappings with Aayush and Srihari.
 2. Two independent reviewers label a 10–15-case calibration batch spanning the three domains; include random apparent passes as well as failures. Preserve critiques and adjudicate disagreements.
 3. Freeze criterion definitions, plugin versions, data splits and thresholds; collect fresh held-out scenarios per domain.
